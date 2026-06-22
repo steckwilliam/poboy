@@ -1,0 +1,453 @@
+/* Po' Boy Pile-Up — Flash-style overlay UI */
+
+/*
+  Background image — place file at:
+  public/assets/backgrounds/poboy-shop.png
+
+  Change this variable to swap backgrounds later.
+*/
+:root {
+  --game-bg-image: url('/assets/backgrounds/poboy-shop.png');
+  --game-bg-fallback: #5a5048;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  padding: 8px;
+}
+
+/* ── Shared game frame ───────────────────────────────── */
+
+.game-frame {
+  position: relative;
+  width: min(100vw - 16px, 960px);
+  aspect-ratio: 4 / 3;
+  max-height: calc(100vh - 16px);
+  max-height: calc(100svh - 16px);
+  overflow: hidden;
+  border: 3px solid #1a1208;
+  box-shadow: 0 0 0 2px #000, 4px 4px 0 #000;
+  background-color: var(--game-bg-fallback);
+  background-image: var(--game-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.game-frame__dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Flash typography ──────────────────────────────────── */
+
+.flash-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  line-height: 1;
+  z-index: 2;
+}
+
+.flash-title__line {
+  display: block;
+  font-size: clamp(2.2rem, 7vw, 3.6rem);
+  font-weight: 900;
+  color: #fff8e0;
+  text-shadow:
+    3px 3px 0 #1a1208,
+    -1px -1px 0 #1a1208,
+    1px -1px 0 #1a1208,
+    -1px 1px 0 #1a1208;
+  letter-spacing: 0.02em;
+}
+
+.flash-title__line--accent {
+  color: #f5c518;
+  margin-top: 0.1em;
+}
+
+.flash-heading {
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 900;
+  color: #f5c518;
+  text-shadow: 2px 2px 0 #000;
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.flash-text {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  font-weight: 700;
+  color: #fff8e0;
+  text-shadow: 1px 1px 0 #000;
+  text-align: center;
+}
+
+/* ── Flash buttons ───────────────────────────────────── */
+
+.btn-flash {
+  font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 28px;
+  color: #1a1208;
+  background: #f5c518;
+  border: 3px solid #1a1208;
+  border-radius: 2px;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.btn-flash:hover {
+  background: #ffd84a;
+}
+
+.btn-flash:active {
+  box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.3);
+  transform: translateY(2px);
+}
+
+.btn-flash--large {
+  font-size: 1.15rem;
+  padding: 12px 36px;
+}
+
+.btn-flash--small {
+  width: 100%;
+  font-size: 0.68rem;
+  padding: 7px 6px;
+}
+
+.btn-flash--alt {
+  background: #e8dcc8;
+}
+
+/* ── Start Screen ──────────────────────────────────────── */
+
+.start-screen__title {
+  top: 14%;
+  width: 90%;
+}
+
+.start-screen__tagline {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translateX(-50%);
+  width: 80%;
+  z-index: 2;
+}
+
+.start-screen__buttons {
+  position: absolute;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+/* ── Instructions Screen ───────────────────────────────── */
+
+.instructions-screen__panel {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 78%;
+  max-width: 520px;
+  z-index: 2;
+}
+
+.overlay-panel {
+  padding: 1.25rem 1.5rem;
+  background: rgba(10, 8, 6, 0.72);
+  border: 3px solid #1a1208;
+}
+
+.instructions-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+
+.instructions-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #fff8e0;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.instructions-list__icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+.overlay-panel__buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ── Result screens (Round Complete, Game Over) ────────── */
+
+.result-screen {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  text-align: center;
+  z-index: 2;
+}
+
+.result-screen__emoji {
+  font-size: 3rem;
+  margin: 0 0 0.5rem;
+}
+
+.result-screen__headline {
+  margin-bottom: 0.75rem;
+}
+
+.result-screen__score {
+  margin: 0 0 1.25rem;
+}
+
+.result-screen__score strong {
+  font-size: 1.5rem;
+  color: #f5c518;
+}
+
+.result-screen__buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Gameplay Screen ───────────────────────────────────── */
+
+.gameplay-screen__play-area {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* ── Right-side HUD (overlaid on background) ───────────── */
+
+.hud {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 18%;
+  min-width: 118px;
+  max-width: 148px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.55rem;
+  padding: 10px 8px;
+  background: rgba(10, 8, 6, 0.5);
+  border-left: 3px solid #1a1208;
+  z-index: 3;
+}
+
+.hud__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hud__stat--yuck {
+  width: 100%;
+}
+
+.hud__label {
+  font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #f5d76e;
+  margin-bottom: 2px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.hud__value {
+  font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.hud__value--small {
+  font-size: 0.65rem;
+  margin-top: 2px;
+  color: #e8dcc8;
+}
+
+.yuck-meter {
+  width: 100%;
+  height: 14px;
+  background: #2a2018;
+  border: 2px solid #000;
+  overflow: hidden;
+}
+
+.yuck-meter__fill {
+  height: 100%;
+  background: #c0392b;
+  transition: width 0.2s linear;
+  min-width: 0;
+}
+
+.hud__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+
+/* ── Game sprites (absolutely positioned) ──────────────── */
+
+.game-sprite {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1a1208;
+  border-radius: 2px;
+  user-select: none;
+}
+
+.game-sprite__emoji {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.game-sprite__label {
+  font-size: 0.5rem;
+  font-weight: 900;
+  color: #1a1208;
+  margin-top: 1px;
+  text-align: center;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.game-sprite--falling {
+  left: 38%;
+  top: 8%;
+  width: 64px;
+  height: 52px;
+}
+
+.game-sprite--bread {
+  left: 42%;
+  bottom: 18%;
+  width: 96px;
+  height: 32px;
+  border-radius: 4px 4px 2px 2px;
+}
+
+.game-sprite--plate {
+  left: 40%;
+  bottom: 10%;
+  width: 130px;
+  height: 24px;
+  background: #d8d8d8;
+  border-radius: 50%;
+}
+
+.game-sprite--plate .game-sprite__emoji {
+  font-size: 0.85rem;
+  opacity: 0.45;
+}
+
+/* ── Dev navigation ────────────────────────────────────── */
+
+.dev-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  padding: 0.35rem;
+  background: rgba(0, 0, 0, 0.85);
+  flex-wrap: wrap;
+  z-index: 999;
+}
+
+.dev-nav button {
+  font-size: 0.65rem;
+  padding: 0.2rem 0.5rem;
+  background: #333;
+  color: #ccc;
+  border: 1px solid #555;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.dev-nav button:hover {
+  background: #444;
+  color: #fff;
+}
+
+/* ── Responsive ────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .instructions-list li {
+    font-size: 0.72rem;
+  }
+
+  .overlay-panel {
+    padding: 1rem;
+    width: 88%;
+  }
+
+  .game-sprite--falling {
+    width: 52px;
+    height: 44px;
+  }
+
+  .game-sprite--bread {
+    width: 80px;
+    height: 28px;
+  }
+
+  .game-sprite--plate {
+    width: 110px;
+    height: 20px;
+  }
+}
