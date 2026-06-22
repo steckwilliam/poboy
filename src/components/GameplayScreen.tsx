@@ -11,11 +11,20 @@ import { GameFrame } from './GameFrame'
 import { HUD } from './HUD'
 
 interface GameplayScreenProps {
+  initialScore: number
+  initialRound: number
   onGameOver: (score: number) => void
+  onRoundComplete: (score: number) => void
   onQuit: () => void
 }
 
-export function GameplayScreen({ onGameOver, onQuit }: GameplayScreenProps) {
+export function GameplayScreen({
+  initialScore,
+  initialRound,
+  onGameOver,
+  onRoundComplete,
+  onQuit,
+}: GameplayScreenProps) {
   const {
     score,
     yuckCount,
@@ -31,7 +40,12 @@ export function GameplayScreen({ onGameOver, onQuit }: GameplayScreenProps) {
     stack,
     isPaused,
     togglePause,
-  } = useGameplay({ onGameOver })
+  } = useGameplay({
+    initialScore,
+    initialRound,
+    onGameOver,
+    onRoundComplete,
+  })
 
   const breadX = plateX + (plateWidth - breadWidth) / 2
   const breadY = plateY - breadHeight

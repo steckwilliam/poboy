@@ -1,9 +1,9 @@
 import { useCallback, useRef, useState } from 'react'
+import { getRoundFallSpeedMultiplier, TOP_BREAD_BONUS_POINTS, TOP_BREAD_ID } from '../constants/gameplay'
 import {
   BREAD_HEIGHT,
   BREAD_WIDTH,
   getPlateY,
-  INITIAL_PLATE_X,
   ITEM_FALL_SPEED,
   PLATE_HEIGHT,
   PLATE_SPEED,
@@ -22,35 +22,33 @@ import {
 } from '../utils/scoring'
 import {
   createFallingItem,
+  createGameplayState,
   createStackLayerId,
   isItemOffScreen,
-  resetSpawnCounters,
 } from '../utils/spawn'
 import { useGameLoop } from './useGameLoop'
 import { useKeyboard } from './useKeyboard'
 
-function createInitialState(): GameplaySimState {
-  resetSpawnCounters()
-  return {
-    score: 0,
-    yuckCount: 0,
-    round: 1,
-    plateX: INITIAL_PLATE_X,
-    fallingItem: createFallingItem(),
-    stack: [],
-    isPaused: false,
-    isRunning: true,
-  }
-}
-
 interface UseGameplayOptions {
+  initialScore: number
+  initialRound: number
   onGameOver: (score: number) => void
+  onRoundComplete: (score: number) => void
 }
 
-export function useGameplay({ onGameOver }: UseGameplayOptions) {
-  const stateRef = useRef<GameplaySimState>(createInitialState())
+export function useGameplay({
+  initialScore,
+  initialRound,
+  onGameOver,
+  onRoundComplete,
+}: UseGameplayOptions) {
+  const stateRef = useRef<GameplaySimState>(
+    createGameplayState({ score: initialScore, round: initialRound }),
+  )
   const onGameOverRef = useRef(onGameOver)
+  const onRoundCompleteRef = useRef(onRoundComplete)
   onGameOverRef.current = onGameOver
+  onRoundCompleteRef.current = onRoundComplete
 
   const [isPaused, setIsPaused] = useState(false)
   const [isRunning, setIsRunning] = useState(true)
@@ -58,12 +56,31 @@ export function useGameplay({ onGameOver }: UseGameplayOptions) {
 
   const keysPressed = useKeyboard(isRunning && !isPaused)
 
-  const triggerGameOver = useCallback((score: number) => {
+  const stopGameplay = useCallback(() => {
     const s = stateRef.current
     s.isRunning = false
     setIsRunning(false)
-    onGameOverRef.current(score)
     setTick((t) => t + 1)
+  }, [])
+
+  const triggerGameOver = useCallback(
+    (score: number) => {
+      stopGameplay()
+      onGameOverRef.current(score)
+    },
+    [stopGameplay],
+  )
+
+  const triggerRoundComplete = useCallback(
+    (score: number) => {
+      stopGameplay()
+      onRoundCompleteRef.current(score)
+    },
+    [stopGameplay],
+  )
+
+  const spawnNextItem = useCallback((s: GameplaySimState) => {
+    s.fallingItem = createFallingItem(s.stack.length)
   }, [])
 
   const handleCatch = useCallback(
@@ -71,26 +88,28 @@ export function useGameplay({ onGameOver }: UseGameplayOptions) {
       const gameItem = getItemById(item.itemId)
       if (!gameItem) return
 
+      if (gameItem.id === TOP_BREAD_ID) {
+        s.score += TOP_BREAD_BONUS_POINTS
+        triggerRoundComplete(s.score)
+        return
+      }
+
       if (gameItem.category === 'good') {
         s.score = addItemScore(s.score, gameItem)
         s.stack.push({ id: createStackLayerId(), itemId: gameItem.id })
 
         if (isStackTooTall(s.stack.length)) {
           triggerGameOver(s.score)
-          return
         }
       } else if (gameItem.category === 'yuck') {
         s.yuckCount += 1
 
         if (isYuckLimitReached(s.yuckCount)) {
           triggerGameOver(s.score)
-          return
         }
       }
-
-      // TODO: top bread — catching it should finish the round and navigate to Round Complete
     },
-    [triggerGameOver],
+    [triggerGameOver, triggerRoundComplete],
   )
 
   const handleUpdate = useCallback(
@@ -111,27 +130,29 @@ export function useGameplay({ onGameOver }: UseGameplayOptions) {
 
       if (s.fallingItem) {
         const item = s.fallingItem
-        item.y += ITEM_FALL_SPEED * deltaMs
+        const fallSpeed =
+          ITEM_FALL_SPEED * getRoundFallSpeedMultiplier(s.round)
+        item.y += fallSpeed * deltaMs
 
         const catchZone = getCatchZone(s.plateX, s.stack.length)
 
         if (checkCatchCollision(item, catchZone)) {
           handleCatch(s, item)
           if (s.isRunning) {
-            s.fallingItem = createFallingItem()
+            spawnNextItem(s)
           }
         } else if (isItemOffScreen(item)) {
-          s.fallingItem = createFallingItem()
+          spawnNextItem(s)
         } else {
           s.fallingItem = item
         }
       } else if (s.isRunning) {
-        s.fallingItem = createFallingItem()
+        spawnNextItem(s)
       }
 
       setTick((t) => t + 1)
     },
-    [handleCatch, keysPressed],
+    [handleCatch, keysPressed, spawnNextItem],
   )
 
   useGameLoop({

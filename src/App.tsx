@@ -7,32 +7,45 @@ import { StartScreen } from './components/StartScreen'
 import type { Screen } from './types/game'
 import './App.css'
 
+const INITIAL_ROUND = 1
+
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
-  const [finalScore, setFinalScore] = useState(0)
+  const [score, setScore] = useState(0)
+  const [round, setRound] = useState(INITIAL_ROUND)
   const [gameSessionKey, setGameSessionKey] = useState(0)
 
-  const startNewGame = useCallback(() => {
-    setFinalScore(0)
+  const resetProgress = useCallback(() => {
+    setScore(0)
+    setRound(INITIAL_ROUND)
     setGameSessionKey((k) => k + 1)
-    setScreen('gameplay')
   }, [])
 
-  const handleGameOver = useCallback((score: number) => {
-    setFinalScore(score)
+  const startNewGame = useCallback(() => {
+    resetProgress()
+    setScreen('gameplay')
+  }, [resetProgress])
+
+  const handleGameOver = useCallback((finalScore: number) => {
+    setScore(finalScore)
     setScreen('gameOver')
   }, [])
 
-  const goToMainMenu = useCallback(() => {
-    setFinalScore(0)
-    setGameSessionKey((k) => k + 1)
-    setScreen('start')
+  const handleRoundComplete = useCallback((completedScore: number) => {
+    setScore(completedScore)
+    setScreen('roundComplete')
   }, [])
 
   const handleContinue = useCallback(() => {
+    setRound((r) => r + 1)
     setGameSessionKey((k) => k + 1)
     setScreen('gameplay')
   }, [])
+
+  const goToMainMenu = useCallback(() => {
+    resetProgress()
+    setScreen('start')
+  }, [resetProgress])
 
   return (
     <div className="app">
@@ -53,14 +66,17 @@ function App() {
       {screen === 'gameplay' && (
         <GameplayScreen
           key={gameSessionKey}
+          initialScore={score}
+          initialRound={round}
           onGameOver={handleGameOver}
+          onRoundComplete={handleRoundComplete}
           onQuit={goToMainMenu}
         />
       )}
 
       {screen === 'roundComplete' && (
         <RoundCompleteScreen
-          score={finalScore}
+          score={score}
           onContinue={handleContinue}
           onMainMenu={goToMainMenu}
         />
@@ -68,7 +84,7 @@ function App() {
 
       {screen === 'gameOver' && (
         <GameOverScreen
-          score={finalScore}
+          score={score}
           onPlayAgain={startNewGame}
           onMainMenu={goToMainMenu}
         />
