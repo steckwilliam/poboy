@@ -1,4 +1,4 @@
-import { GOOD_ITEMS, ITEMS, YUCK_ITEMS } from '../data/items'
+import { GOOD_ITEMS, YUCK_ITEMS } from '../data/items'
 import type { GameItem } from '../types/game'
 
 /** Pick a random element from an array */
@@ -6,23 +6,20 @@ export function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]
 }
 
-/** Placeholder: select a random good ingredient */
 export function pickRandomGoodItem(): GameItem {
   return pickRandom(GOOD_ITEMS)
 }
 
-/** Placeholder: select a random yuck item */
 export function pickRandomYuckItem(): GameItem {
   return pickRandom(YUCK_ITEMS)
 }
 
 /**
- * Placeholder: weighted random item selection for spawning.
- * Future: adjust weights by round, yuck meter, and special bread timing.
+ * Random spawn picker — good and yuck items only.
+ * TODO: top bread special item will end the round when caught (not implemented yet).
  */
 export function pickRandomSpawnItem(): GameItem {
   const roll = Math.random()
-  if (roll < 0.15) return pickRandom(YUCK_ITEMS)
-  if (roll < 0.18) return ITEMS.find((i) => i.id === 'top-bread')!
+  if (roll < 0.22) return pickRandom(YUCK_ITEMS)
   return pickRandom(GOOD_ITEMS)
 }

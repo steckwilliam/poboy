@@ -7,37 +7,32 @@ import { StartScreen } from './components/StartScreen'
 import type { Screen } from './types/game'
 import './App.css'
 
-const INITIAL_SCORE = 0
-const INITIAL_YUCK = 0
-const INITIAL_ROUND = 1
-
 function App() {
   const [screen, setScreen] = useState<Screen>('start')
-  const [score, setScore] = useState(INITIAL_SCORE)
-  const [yuckMeter, setYuckMeter] = useState(INITIAL_YUCK)
-  const [round, setRound] = useState(INITIAL_ROUND)
-
-  const resetGameState = useCallback(() => {
-    setScore(INITIAL_SCORE)
-    setYuckMeter(INITIAL_YUCK)
-    setRound(INITIAL_ROUND)
-  }, [])
+  const [finalScore, setFinalScore] = useState(0)
+  const [gameSessionKey, setGameSessionKey] = useState(0)
 
   const startNewGame = useCallback(() => {
-    resetGameState()
+    setFinalScore(0)
+    setGameSessionKey((k) => k + 1)
     setScreen('gameplay')
-  }, [resetGameState])
+  }, [])
 
-  const handleContinue = useCallback(() => {
-    setRound((r) => r + 1)
-    setYuckMeter(INITIAL_YUCK)
-    setScreen('gameplay')
+  const handleGameOver = useCallback((score: number) => {
+    setFinalScore(score)
+    setScreen('gameOver')
   }, [])
 
   const goToMainMenu = useCallback(() => {
-    resetGameState()
+    setFinalScore(0)
+    setGameSessionKey((k) => k + 1)
     setScreen('start')
-  }, [resetGameState])
+  }, [])
+
+  const handleContinue = useCallback(() => {
+    setGameSessionKey((k) => k + 1)
+    setScreen('gameplay')
+  }, [])
 
   return (
     <div className="app">
@@ -57,19 +52,15 @@ function App() {
 
       {screen === 'gameplay' && (
         <GameplayScreen
-          score={score}
-          yuckMeter={yuckMeter}
-          round={round}
-          onPause={() => {
-            // Future: pause overlay / freeze game loop
-          }}
+          key={gameSessionKey}
+          onGameOver={handleGameOver}
           onQuit={goToMainMenu}
         />
       )}
 
       {screen === 'roundComplete' && (
         <RoundCompleteScreen
-          score={score}
+          score={finalScore}
           onContinue={handleContinue}
           onMainMenu={goToMainMenu}
         />
@@ -77,13 +68,12 @@ function App() {
 
       {screen === 'gameOver' && (
         <GameOverScreen
-          score={score}
+          score={finalScore}
           onPlayAgain={startNewGame}
           onMainMenu={goToMainMenu}
         />
       )}
 
-      {/* Dev-only: quick navigation to test all screens */}
       {import.meta.env.DEV && (
         <nav className="dev-nav" aria-label="Development screen shortcuts">
           <button type="button" onClick={() => setScreen('start')}>Start</button>

@@ -17,34 +17,31 @@ export interface GameItem {
   futureImagePath: string
 }
 
-export interface FallingItem {
+export interface BoundingBox {
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export interface FallingItem extends BoundingBox {
   id: string
   itemId: string
-  x: number
-  y: number
-  width: number
-  height: number
 }
 
-export interface Plate {
-  x: number
-  y: number
-  width: number
-  height: number
-}
+export interface Plate extends BoundingBox {}
 
 export interface StackLayer {
+  id: string
   itemId: string
-  y: number
 }
 
-export interface GameState {
+export interface GameplaySimState {
   score: number
-  yuckMeter: number
+  yuckCount: number
   round: number
-  stackHeight: number
-  plate: Plate
-  fallingItems: FallingItem[]
+  plateX: number
+  fallingItem: FallingItem | null
   stack: StackLayer[]
   isPaused: boolean
   isRunning: boolean
@@ -54,5 +51,5 @@ export interface GameActions {
   onPause: () => void
   onQuit: () => void
   onRoundComplete: () => void
-  onGameOver: () => void
+  onGameOver: (score: number) => void
 }

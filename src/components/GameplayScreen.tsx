@@ -1,33 +1,40 @@
-import { useCallback } from 'react'
-import { BOTTOM_BREAD } from '../data/items'
-import { useGameLoop } from '../hooks/useGameLoop'
+import {
+  toFramePercentHeight,
+  toFramePercentY,
+  toPlayAreaPercentWidth,
+  toPlayAreaPercentX,
+} from '../constants/gameLayout'
+import { BOTTOM_BREAD, getItemById } from '../data/items'
+import { useGameplay } from '../hooks/useGameplay'
+import { MAX_YUCK_COUNT, yuckMeterPercent } from '../utils/scoring'
 import { GameFrame } from './GameFrame'
 import { HUD } from './HUD'
 
 interface GameplayScreenProps {
-  score: number
-  yuckMeter: number
-  round: number
-  onPause: () => void
+  onGameOver: (score: number) => void
   onQuit: () => void
 }
 
-export function GameplayScreen({
-  score,
-  yuckMeter,
-  round,
-  onPause,
-  onQuit,
-}: GameplayScreenProps) {
-  // Future: player movement, falling items, collisions, stack updates
-  const handleUpdate = useCallback((_deltaMs: number) => {
-    // Game loop tick — gameplay logic will go here
-  }, [])
+export function GameplayScreen({ onGameOver, onQuit }: GameplayScreenProps) {
+  const {
+    score,
+    yuckCount,
+    round,
+    plateX,
+    plateY,
+    plateWidth,
+    plateHeight,
+    breadWidth,
+    breadHeight,
+    stackLayerHeight,
+    fallingItem,
+    stack,
+    isPaused,
+    togglePause,
+  } = useGameplay({ onGameOver })
 
-  useGameLoop({
-    onUpdate: handleUpdate,
-    isRunning: true,
-  })
+  const breadX = plateX + (plateWidth - breadWidth) / 2
+  const breadY = plateY - breadHeight
 
   return (
     <GameFrame className="game-frame--gameplay">
@@ -37,34 +44,95 @@ export function GameplayScreen({
           e.g. plate.png, bottom-bread.png, fried-shrimp.png
         */}
 
-        <div
-          className="game-sprite game-sprite--falling"
-          style={{ backgroundColor: '#f4a460' }}
-        >
-          <span className="game-sprite__emoji" aria-hidden="true">🍤</span>
-          <span className="game-sprite__label">Fried Shrimp</span>
-        </div>
+        {fallingItem && (() => {
+          const item = getItemById(fallingItem.itemId)
+          if (!item) return null
+          return (
+            <div
+              className="game-sprite game-sprite--falling"
+              style={{
+                left: `${toPlayAreaPercentX(fallingItem.x)}%`,
+                top: `${toFramePercentY(fallingItem.y)}%`,
+                width: `${toPlayAreaPercentWidth(fallingItem.width)}%`,
+                height: `${toFramePercentHeight(fallingItem.height)}%`,
+                backgroundColor: item.placeholderColor,
+              }}
+            >
+              <span className="game-sprite__emoji" aria-hidden="true">
+                {item.placeholderEmoji}
+              </span>
+              <span className="game-sprite__label">{item.label}</span>
+            </div>
+          )
+        })()}
+
+        {stack.map((layer, index) => {
+          const item = getItemById(layer.itemId)
+          if (!item) return null
+          const layerY = breadY - (index + 1) * stackLayerHeight
+          const layerWidth = breadWidth * 0.92
+          return (
+            <div
+              key={layer.id}
+              className="game-sprite game-sprite--stack"
+              style={{
+                left: `${toPlayAreaPercentX(plateX + (plateWidth - layerWidth) / 2)}%`,
+                top: `${toFramePercentY(layerY)}%`,
+                width: `${toPlayAreaPercentWidth(layerWidth)}%`,
+                height: `${toFramePercentHeight(stackLayerHeight)}%`,
+                backgroundColor: item.placeholderColor,
+              }}
+            >
+              <span className="game-sprite__emoji" aria-hidden="true">
+                {item.placeholderEmoji}
+              </span>
+            </div>
+          )
+        })}
 
         <div
           className="game-sprite game-sprite--bread"
-          style={{ backgroundColor: BOTTOM_BREAD.placeholderColor }}
+          style={{
+            left: `${toPlayAreaPercentX(breadX)}%`,
+            top: `${toFramePercentY(breadY)}%`,
+            width: `${toPlayAreaPercentWidth(breadWidth)}%`,
+            height: `${toFramePercentHeight(breadHeight)}%`,
+            backgroundColor: BOTTOM_BREAD.placeholderColor,
+          }}
         >
           <span className="game-sprite__emoji" aria-hidden="true">
             {BOTTOM_BREAD.placeholderEmoji}
           </span>
-          <span className="game-sprite__label">{BOTTOM_BREAD.label}</span>
         </div>
 
-        <div className="game-sprite game-sprite--plate" aria-label="Player plate">
+        <div
+          className="game-sprite game-sprite--plate"
+          aria-label="Player plate"
+          style={{
+            left: `${toPlayAreaPercentX(plateX)}%`,
+            top: `${toFramePercentY(plateY)}%`,
+            width: `${toPlayAreaPercentWidth(plateWidth)}%`,
+            height: `${toFramePercentHeight(plateHeight)}%`,
+          }}
+        >
           <span className="game-sprite__emoji" aria-hidden="true">🍽️</span>
         </div>
       </div>
 
+      {isPaused && (
+        <div className="gameplay-screen__pause-overlay" aria-live="polite">
+          <span className="gameplay-screen__pause-text">Paused</span>
+        </div>
+      )}
+
       <HUD
         score={score}
-        yuckMeter={yuckMeter}
+        yuckCount={yuckCount}
+        yuckMax={MAX_YUCK_COUNT}
+        yuckPercent={yuckMeterPercent(yuckCount)}
         round={round}
-        onPause={onPause}
+        isPaused={isPaused}
+        onPause={togglePause}
         onQuit={onQuit}
       />
     </GameFrame>
