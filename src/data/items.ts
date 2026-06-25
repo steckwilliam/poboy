@@ -20,7 +20,7 @@ export const ITEMS: GameItem[] = [
     stackRender: {
       width: 230,
       offsetX: 0,
-      offsetY: 30,
+      offsetY: 35,
       overlap: 35,
     },
   },
