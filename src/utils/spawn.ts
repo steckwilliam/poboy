@@ -7,6 +7,7 @@ import {
 import { getItemById } from '../data/items'
 import type { FallingItem, GameItem, GameplaySimState } from '../types/game'
 import { getFallingItemVisualSize } from './fallingItem'
+import { createDressedIngredientSet } from './dressed'
 import { pickRandomSpawnItem } from './random'
 
 let fallingIdCounter = 0
@@ -71,5 +72,8 @@ export function createGameplayState(
     isPaused: false,
     isRunning: true,
     gameTimeMs: 0,
+    dressedIngredients: createDressedIngredientSet(),
+    dressedAchieved: false,
+    dressedBonusAwarded: false,
   }
 }

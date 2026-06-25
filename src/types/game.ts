@@ -105,6 +105,12 @@ export interface GameplaySimState {
   isRunning: boolean
   /** Elapsed gameplay time in ms — pauses with the game loop */
   gameTimeMs: number
+  /** Dressing ingredients collected this round (for DRESSED! bonus) */
+  dressedIngredients: Set<string>
+  /** True once all dressing ingredients have been collected this round */
+  dressedAchieved: boolean
+  /** True once the +100 DRESSED! bonus has been awarded this round */
+  dressedBonusAwarded: boolean
 }
 
 export interface GameActions {

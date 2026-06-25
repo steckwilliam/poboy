@@ -1,3 +1,4 @@
+import { DRESSED_BONUS_POINTS, DRESSED_BURST_IMAGE } from '../constants/dressed'
 import { getItemById } from '../data/items'
 import {
   GOOD_INGREDIENT_TIERS,
@@ -104,24 +105,42 @@ export function InstructionsScreen({ onBack, onPlay }: InstructionsScreenProps) 
           </section>
         </div>
 
-        <section className="instructions-screen__section instructions-screen__section--bread">
-          <img
-            className="instructions-screen__bread-img"
-            src={TOP_BREAD_INSTRUCTION_SPRITE.src}
-            alt={TOP_BREAD_INSTRUCTION_SPRITE.alt}
-            draggable={false}
-          />
-          <div className="instructions-screen__bread-copy">
-            <p className="instructions-screen__text">
-              A top piece of bread will randomly fall. If you&apos;re done
-              building, catch the bread to finish your po&apos; boy. If not,
-              let it fall and keep stacking for more points.
+        <div className="instructions-screen__bottom-row">
+          <section className="instructions-screen__section instructions-screen__section--dressed">
+            <h3 className="instructions-screen__label instructions-screen__label--dressed">
+              Dressed!
+            </h3>
+            <img
+              className="instructions-screen__dressed-img"
+              src={DRESSED_BURST_IMAGE}
+              alt="DRESSED! bonus burst"
+              draggable={false}
+            />
+            <p className="instructions-screen__text instructions-screen__text--dressed">
+              Catch lettuce, tomato, pickle, mayonnaise, and hot sauce in one
+              round to earn a <strong>+{DRESSED_BONUS_POINTS}</strong> bonus.
             </p>
-            <p className="instructions-screen__text instructions-screen__text--warning">
-              If your po&apos; boy gets too tall, the game is over.
-            </p>
-          </div>
-        </section>
+          </section>
+
+          <section className="instructions-screen__section instructions-screen__section--bread">
+            <img
+              className="instructions-screen__bread-img"
+              src={TOP_BREAD_INSTRUCTION_SPRITE.src}
+              alt={TOP_BREAD_INSTRUCTION_SPRITE.alt}
+              draggable={false}
+            />
+            <div className="instructions-screen__bread-copy">
+              <p className="instructions-screen__text">
+                A top piece of bread will randomly fall. If you&apos;re done
+                building, catch the bread to finish your po&apos; boy. If not,
+                let it fall and keep stacking for more points.
+              </p>
+              <p className="instructions-screen__text instructions-screen__text--warning">
+                If your po&apos; boy gets too tall, the game is over.
+              </p>
+            </div>
+          </section>
+        </div>
 
         <div className="instructions-screen__buttons">
           <button type="button" className="btn-flash btn-flash--alt" onClick={onBack}>

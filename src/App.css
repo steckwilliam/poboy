@@ -200,7 +200,7 @@
   gap: 0.75rem;
   flex: 0 0 auto;
   min-height: 58%;
-  margin-top: 10%;
+  margin-top: 5%;
   pointer-events: auto;
   overflow: visible;
 }
@@ -224,12 +224,51 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex: 0 0 auto;
-  margin-top: auto;
-  pointer-events: auto;
+  flex: 1;
+  min-width: 0;
   overflow: visible;
   position: relative;
   z-index: 2;
+}
+
+.instructions-screen__bottom-row {
+  display: flex;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  margin-top: auto;
+  pointer-events: auto;
+}
+
+.instructions-screen__section--dressed {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.instructions-screen__label--dressed {
+  color: #7dff9a;
+}
+
+.instructions-screen__dressed-img {
+  display: block;
+  width: clamp(72px, 14vw, 108px);
+  height: auto;
+  object-fit: contain;
+  margin: 0.15rem 0 0.35rem;
+  filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.55));
+  user-select: none;
+}
+
+.instructions-screen__text--dressed {
+  margin-bottom: 0;
+  font-size: clamp(0.6rem, 1.4vw, 0.74rem);
+}
+
+.instructions-screen__text--dressed strong {
+  color: #7dff9a;
 }
 
 .instructions-screen__label {
@@ -525,6 +564,52 @@
   pointer-events: none;
 }
 
+.gameplay-screen__dressed-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: calc(100% - 18%);
+  max-width: calc(100% - 148px);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: dressed-popup 1.8s ease forwards;
+}
+
+.gameplay-screen__dressed-popup-img {
+  display: block;
+  width: min(72%, 420px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(4px 6px 0 rgba(0, 0, 0, 0.6));
+  user-select: none;
+}
+
+@keyframes dressed-popup {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  22% {
+    transform: scale(1);
+  }
+  72% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
 .gameplay-screen__pause-text {
   font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif;
   font-size: clamp(2rem, 6vw, 3rem);
@@ -541,6 +626,7 @@
   --hud-score-y: 10%;
   --hud-yuck-y: 27%;
   --hud-round-y: 47%;
+  --hud-dressed-y: 62%;
   --hud-actions-bottom: 8%;
 
   position: absolute;
@@ -625,6 +711,29 @@
   background: #c0392b;
   transition: width 0.2s linear;
   min-width: 0;
+}
+
+.hud__dressed-badge {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: var(--hud-dressed-y);
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hud__dressed-badge-img {
+  display: block;
+  width: 100%;
+  max-width: 176px;
+  height: auto;
+  object-fit: contain;
+  transform: scale(1.3);
+  transform-origin: center center;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.55));
+  user-select: none;
 }
 
 .hud__actions {
@@ -806,6 +915,11 @@
     flex-direction: column;
     min-height: auto;
     margin-top: 14%;
+    gap: 0.5rem;
+  }
+
+  .instructions-screen__bottom-row {
+    flex-direction: column;
     gap: 0.5rem;
   }
 

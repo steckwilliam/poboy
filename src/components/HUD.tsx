@@ -1,9 +1,12 @@
+import { DRESSED_BURST_IMAGE } from '../constants/dressed'
+
 interface HUDProps {
   score: number
   yuckCount: number
   yuckMax: number
   yuckPercent: number
   round: number
+  dressedAchieved: boolean
   isPaused: boolean
   onPause: () => void
   onQuit: () => void
@@ -15,6 +18,7 @@ export function HUD({
   yuckMax,
   yuckPercent,
   round,
+  dressedAchieved,
   isPaused,
   onPause,
   onQuit,
@@ -40,6 +44,17 @@ export function HUD({
         <span className="hud__label">Round</span>
         <span className="hud__value">{round}</span>
       </div>
+
+      {dressedAchieved && (
+        <div className="hud__dressed-badge" aria-label="DRESSED! bonus earned this round">
+          <img
+            className="hud__dressed-badge-img"
+            src={DRESSED_BURST_IMAGE}
+            alt=""
+            draggable={false}
+          />
+        </div>
+      )}
 
       <div className="hud__actions">
         <button type="button" className="btn-flash btn-flash--small" onClick={onPause}>

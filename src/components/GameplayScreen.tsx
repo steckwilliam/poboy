@@ -8,6 +8,7 @@ import {
   toPlayAreaPercentWidth,
   toPlayAreaPercentX,
 } from '../constants/gameLayout'
+import { DRESSED_BURST_IMAGE } from '../constants/dressed'
 import { SHOW_HITBOXES } from '../constants/gameplay'
 import { BOTTOM_BREAD, getItemById } from '../data/items'
 import { useGameplay } from '../hooks/useGameplay'
@@ -52,6 +53,8 @@ export function GameplayScreen({
     fallingItem,
     stack,
     gameTimeMs,
+    dressedAchieved,
+    showDressedPopup,
     isPaused,
     togglePause,
   } = useGameplay({
@@ -257,6 +260,21 @@ export function GameplayScreen({
         )}
       </div>
 
+      {showDressedPopup && (
+        <div
+          className="gameplay-screen__dressed-popup"
+          role="status"
+          aria-live="polite"
+        >
+          <img
+            className="gameplay-screen__dressed-popup-img"
+            src={DRESSED_BURST_IMAGE}
+            alt="DRESSED! +100 bonus"
+            draggable={false}
+          />
+        </div>
+      )}
+
       {isPaused && (
         <div className="gameplay-screen__pause-overlay" aria-live="polite">
           <span className="gameplay-screen__pause-text">Paused</span>
@@ -269,6 +287,7 @@ export function GameplayScreen({
         yuckMax={MAX_YUCK_COUNT}
         yuckPercent={yuckMeterPercent(yuckCount)}
         round={round}
+        dressedAchieved={dressedAchieved}
         isPaused={isPaused}
         onPause={togglePause}
         onQuit={onQuit}

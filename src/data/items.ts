@@ -18,7 +18,7 @@ export const ITEMS: GameItem[] = [
       offsetY: 0,
     },
     stackRender: {
-      width: 250,
+      width: 230,
       offsetX: 0,
       offsetY: 30,
       overlap: 35,
@@ -112,7 +112,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/hot-sauce.png',
     fallingImagePath: '/assets/sprites/ingredients/hot-sauce-falling.png',
     stackImagePath: '/assets/sprites/ingredients/hot-sauce-stack.png',
-    fallingRender: { width: 140 },
+    fallingRender: { width: 100 },
     stackRender: { width: 260, offsetX: 0, offsetY: 45, overlap: 60 },
   },
 

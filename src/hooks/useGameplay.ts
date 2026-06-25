@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { DRESSED_BONUS_POINTS, DRESSED_POPUP_DURATION_MS } from '../constants/dressed'
 import { getRoundFallSpeedMultiplier, TOP_BREAD_BONUS_POINTS, TOP_BREAD_ID } from '../constants/gameplay'
 import {
   BOTTOM_BREAD_DISPLAY_WIDTH,
@@ -11,10 +12,14 @@ import { getItemById } from '../data/items'
 import type { FallingItem, GameplaySimState, StackLayer } from '../types/game'
 import { checkCatchCollision, getCatchZone } from '../utils/collision'
 import {
+  hasAllDressedIngredients,
+  isDressedRequiredItem,
+} from '../utils/dressed'
+import {
   addItemScore,
   isStackTooTall,
   isYuckLimitReached,
-  MAX_STACK_LAYERS,
+  MAX_INGREDIENTS_BEFORE_TOO_TALL,
 } from '../utils/scoring'
 import {
   createFallingItem,
@@ -48,7 +53,28 @@ export function useGameplay({
 
   const [isPaused, setIsPaused] = useState(false)
   const [isRunning, setIsRunning] = useState(true)
+  const [showDressedPopup, setShowDressedPopup] = useState(false)
+  const dressedPopupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [, setTick] = useState(0)
+
+  useEffect(() => {
+    return () => {
+      if (dressedPopupTimerRef.current) {
+        clearTimeout(dressedPopupTimerRef.current)
+      }
+    }
+  }, [])
+
+  const triggerDressedCelebration = useCallback(() => {
+    setShowDressedPopup(true)
+    if (dressedPopupTimerRef.current) {
+      clearTimeout(dressedPopupTimerRef.current)
+    }
+    dressedPopupTimerRef.current = setTimeout(() => {
+      setShowDressedPopup(false)
+      dressedPopupTimerRef.current = null
+    }, DRESSED_POPUP_DURATION_MS)
+  }, [])
 
   const keysPressed = useKeyboard(isRunning && !isPaused)
 
@@ -100,6 +126,21 @@ export function useGameplay({
         s.score = addItemScore(s.score, gameItem)
         s.stack.push({ id: createStackLayerId(), itemId: gameItem.id })
 
+        if (
+          !s.dressedBonusAwarded &&
+          isDressedRequiredItem(gameItem.id) &&
+          !s.dressedIngredients.has(gameItem.id)
+        ) {
+          s.dressedIngredients.add(gameItem.id)
+
+          if (hasAllDressedIngredients(s.dressedIngredients)) {
+            s.dressedAchieved = true
+            s.dressedBonusAwarded = true
+            s.score += DRESSED_BONUS_POINTS
+            triggerDressedCelebration()
+          }
+        }
+
         if (isStackTooTall(s.stack.length)) {
           triggerGameOver(s.score)
         }
@@ -111,7 +152,7 @@ export function useGameplay({
         }
       }
     },
-    [triggerGameOver, triggerRoundComplete, setTick],
+    [triggerGameOver, triggerRoundComplete, triggerDressedCelebration, setTick],
   )
 
   const handleUpdate = useCallback(
@@ -186,9 +227,11 @@ export function useGameplay({
     fallingItem: sim.fallingItem,
     stack: sim.stack,
     gameTimeMs: sim.gameTimeMs,
+    dressedAchieved: sim.dressedAchieved,
+    showDressedPopup,
     isPaused,
     isRunning,
     togglePause,
-    maxStackLayers: MAX_STACK_LAYERS,
+    maxStackLayers: MAX_INGREDIENTS_BEFORE_TOO_TALL,
   }
 }
