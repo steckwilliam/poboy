@@ -1,18 +1,14 @@
 import { useCallback, useRef, useState } from 'react'
 import { getRoundFallSpeedMultiplier, TOP_BREAD_BONUS_POINTS, TOP_BREAD_ID } from '../constants/gameplay'
 import {
-  BREAD_HEIGHT,
-  BREAD_WIDTH,
-  getPlateY,
+  BOTTOM_BREAD_DISPLAY_WIDTH,
+  BREAD_MOVE_SPEED,
   ITEM_FALL_SPEED,
-  PLATE_HEIGHT,
-  PLATE_SPEED,
-  PLATE_WIDTH,
   PLAYABLE_WIDTH,
   STACK_LAYER_HEIGHT,
 } from '../constants/gameLayout'
 import { getItemById } from '../data/items'
-import type { FallingItem, GameplaySimState } from '../types/game'
+import type { FallingItem, GameplaySimState, StackLayer } from '../types/game'
 import { checkCatchCollision, getCatchZone } from '../utils/collision'
 import {
   addItemScore,
@@ -33,7 +29,7 @@ interface UseGameplayOptions {
   initialScore: number
   initialRound: number
   onGameOver: (score: number) => void
-  onRoundComplete: (score: number) => void
+  onRoundComplete: (score: number, completedStack: StackLayer[]) => void
 }
 
 export function useGameplay({
@@ -72,9 +68,9 @@ export function useGameplay({
   )
 
   const triggerRoundComplete = useCallback(
-    (score: number) => {
+    (score: number, completedStack: StackLayer[]) => {
       stopGameplay()
-      onRoundCompleteRef.current(score)
+      onRoundCompleteRef.current(score, completedStack)
     },
     [stopGameplay],
   )
@@ -89,8 +85,14 @@ export function useGameplay({
       if (!gameItem) return
 
       if (gameItem.id === TOP_BREAD_ID) {
+        s.stack.push({ id: createStackLayerId(), itemId: TOP_BREAD_ID })
+        s.fallingItem = null
         s.score += TOP_BREAD_BONUS_POINTS
-        triggerRoundComplete(s.score)
+        const completedStack = s.stack.map((layer) => ({ ...layer }))
+        setTick((t) => t + 1)
+        requestAnimationFrame(() => {
+          triggerRoundComplete(s.score, completedStack)
+        })
         return
       }
 
@@ -109,7 +111,7 @@ export function useGameplay({
         }
       }
     },
-    [triggerGameOver, triggerRoundComplete],
+    [triggerGameOver, triggerRoundComplete, setTick],
   )
 
   const handleUpdate = useCallback(
@@ -117,16 +119,21 @@ export function useGameplay({
       const s = stateRef.current
       if (!s.isRunning || s.isPaused) return
 
+      s.gameTimeMs += deltaMs
+
       const keys = keysPressed.current
       let dx = 0
       if (keys.has('ArrowLeft') || keys.has('a') || keys.has('A')) {
-        dx -= PLATE_SPEED * deltaMs
+        dx -= BREAD_MOVE_SPEED * deltaMs
       }
       if (keys.has('ArrowRight') || keys.has('d') || keys.has('D')) {
-        dx += PLATE_SPEED * deltaMs
+        dx += BREAD_MOVE_SPEED * deltaMs
       }
 
-      s.plateX = Math.max(0, Math.min(PLAYABLE_WIDTH - PLATE_WIDTH, s.plateX + dx))
+      s.breadX = Math.max(
+        0,
+        Math.min(PLAYABLE_WIDTH - BOTTOM_BREAD_DISPLAY_WIDTH, s.breadX + dx),
+      )
 
       if (s.fallingItem) {
         const item = s.fallingItem
@@ -134,9 +141,10 @@ export function useGameplay({
           ITEM_FALL_SPEED * getRoundFallSpeedMultiplier(s.round)
         item.y += fallSpeed * deltaMs
 
-        const catchZone = getCatchZone(s.plateX, s.stack.length)
+        const catchZone = getCatchZone(s.breadX, s.stack.length)
+        const gameItem = getItemById(item.itemId)
 
-        if (checkCatchCollision(item, catchZone)) {
+        if (gameItem && checkCatchCollision(item, catchZone, gameItem)) {
           handleCatch(s, item)
           if (s.isRunning) {
             spawnNextItem(s)
@@ -168,21 +176,16 @@ export function useGameplay({
   }, [])
 
   const sim = stateRef.current
-  const plateY = getPlateY()
 
   return {
     score: sim.score,
     yuckCount: sim.yuckCount,
     round: sim.round,
-    plateX: sim.plateX,
-    plateY,
-    plateWidth: PLATE_WIDTH,
-    plateHeight: PLATE_HEIGHT,
-    breadWidth: BREAD_WIDTH,
-    breadHeight: BREAD_HEIGHT,
+    breadX: sim.breadX,
     stackLayerHeight: STACK_LAYER_HEIGHT,
     fallingItem: sim.fallingItem,
     stack: sim.stack,
+    gameTimeMs: sim.gameTimeMs,
     isPaused,
     isRunning,
     togglePause,

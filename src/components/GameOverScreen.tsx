@@ -14,9 +14,8 @@ export function GameOverScreen({
   return (
     <GameFrame className="game-frame--game-over" dimOverlay>
       <div className="result-screen">
-        <p className="result-screen__emoji" aria-hidden="true">😵</p>
         <h2 className="flash-heading result-screen__headline">
-          Now that&apos;s just sloppy.
+        Makin’ groceries? More like makin’ a mess.
         </h2>
         <p className="flash-text result-screen__score">
           Final Score: <strong>{score}</strong>

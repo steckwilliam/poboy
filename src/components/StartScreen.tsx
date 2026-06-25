@@ -14,7 +14,7 @@ export function StartScreen({ onPlay, onHowToPlay }: StartScreenProps) {
       </h1>
 
       <p className="flash-text start-screen__tagline">
-        Stack up a legendary New Orleans sandwich!
+        Pile up a legendary New Orleans Po' Boy!
       </p>
 
       <div className="start-screen__buttons">

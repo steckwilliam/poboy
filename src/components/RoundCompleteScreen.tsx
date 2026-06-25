@@ -1,20 +1,33 @@
 import { GameFrame } from './GameFrame'
+import { SandwichPreview } from './SandwichPreview'
+import type { StackLayer } from '../types/game'
 
 interface RoundCompleteScreenProps {
   score: number
+  completedStack: StackLayer[] | null
   onContinue: () => void
   onMainMenu: () => void
 }
 
 export function RoundCompleteScreen({
   score,
+  completedStack,
   onContinue,
   onMainMenu,
 }: RoundCompleteScreenProps) {
+  const hasPreview = completedStack !== null && completedStack.length > 0
+
   return (
     <GameFrame className="game-frame--round-complete" dimOverlay>
       <div className="result-screen">
-        <p className="result-screen__emoji" aria-hidden="true">🥪</p>
+        {hasPreview ? (
+          <SandwichPreview stack={completedStack} className="result-screen__preview" />
+        ) : (
+          <p className="result-screen__fallback" aria-hidden="true">
+            🥖
+          </p>
+        )}
+
         <h2 className="flash-heading result-screen__headline">
           Now that&apos;s a po&apos; boy!
         </h2>

@@ -21,7 +21,7 @@ export function HUD({
 }: HUDProps) {
   return (
     <aside className="hud" aria-label="Game status">
-      <div className="hud__stat">
+      <div className="hud__stat hud__stat--score">
         <span className="hud__label">Score</span>
         <span className="hud__value">{score}</span>
       </div>
@@ -36,7 +36,7 @@ export function HUD({
         </span>
       </div>
 
-      <div className="hud__stat">
+      <div className="hud__stat hud__stat--round">
         <span className="hud__label">Round</span>
         <span className="hud__value">{round}</span>
       </div>
