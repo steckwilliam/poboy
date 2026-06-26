@@ -102,7 +102,8 @@ export function useGameplay({
   )
 
   const spawnNextItem = useCallback((s: GameplaySimState) => {
-    s.fallingItem = createFallingItem(s.stack.length)
+    s.fallingItem = createFallingItem(s.stack.length, s.lastSpawnItemId)
+    s.lastSpawnItemId = s.fallingItem.itemId
   }, [])
 
   const handleCatch = useCallback(
@@ -115,6 +116,7 @@ export function useGameplay({
         s.fallingItem = null
         s.score += TOP_BREAD_BONUS_POINTS
         const completedStack = s.stack.map((layer) => ({ ...layer }))
+        stopGameplay()
         setTick((t) => t + 1)
         requestAnimationFrame(() => {
           triggerRoundComplete(s.score, completedStack)
@@ -152,7 +154,7 @@ export function useGameplay({
         }
       }
     },
-    [triggerGameOver, triggerRoundComplete, triggerDressedCelebration, setTick],
+    [triggerGameOver, triggerRoundComplete, triggerDressedCelebration, stopGameplay],
   )
 
   const handleUpdate = useCallback(

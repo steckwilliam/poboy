@@ -15,7 +15,7 @@ export function GameOverScreen({
     <GameFrame className="game-frame--game-over" dimOverlay>
       <div className="result-screen">
         <h2 className="flash-heading result-screen__headline">
-        Makin’ groceries? More like makin’ a mess.
+        Makin’ groceries? More like makin’ a mess!
         </h2>
         <p className="flash-text result-screen__score">
           Final Score: <strong>{score}</strong>

@@ -18,7 +18,11 @@ export function resetSpawnCounters(): void {
   stackIdCounter = 0
 }
 
-function pickSpawnItem(stackLayerCount: number, item?: GameItem): GameItem {
+function pickSpawnItem(
+  stackLayerCount: number,
+  lastItemId: string | null,
+  item?: GameItem,
+): GameItem {
   if (item) return item
 
   if (TEST_SPAWN_ITEM_ID) {
@@ -26,14 +30,15 @@ function pickSpawnItem(stackLayerCount: number, item?: GameItem): GameItem {
     if (testItem) return testItem
   }
 
-  return pickRandomSpawnItem(stackLayerCount)
+  return pickRandomSpawnItem(stackLayerCount, lastItemId)
 }
 
 export function createFallingItem(
   stackLayerCount: number,
+  lastItemId: string | null = null,
   item?: GameItem,
 ): FallingItem {
-  const spawnItem = pickSpawnItem(stackLayerCount, item)
+  const spawnItem = pickSpawnItem(stackLayerCount, lastItemId, item)
   const visual = getFallingItemVisualSize(spawnItem)
 
   return {
@@ -62,12 +67,14 @@ export function createGameplayState(
   options: GameplayInitOptions = {},
 ): GameplaySimState {
   resetSpawnCounters()
+  const fallingItem = createFallingItem(0, null)
   return {
     score: options.score ?? 0,
     yuckCount: 0,
     round: options.round ?? 1,
     breadX: INITIAL_BREAD_X,
-    fallingItem: createFallingItem(0),
+    fallingItem,
+    lastSpawnItemId: fallingItem.itemId,
     stack: [],
     isPaused: false,
     isRunning: true,

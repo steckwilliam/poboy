@@ -111,6 +111,8 @@ export interface GameplaySimState {
   dressedAchieved: boolean
   /** True once the +100 DRESSED! bonus has been awarded this round */
   dressedBonusAwarded: boolean
+  /** Last spawned falling item — used to avoid immediate repeat drops */
+  lastSpawnItemId: string | null
 }
 
 export interface GameActions {

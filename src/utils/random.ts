@@ -12,6 +12,15 @@ export function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)]
 }
 
+function pickRandomExcluding(
+  items: GameItem[],
+  excludeId: string | null,
+): GameItem {
+  if (!excludeId || items.length <= 1) return pickRandom(items)
+  const filtered = items.filter((item) => item.id !== excludeId)
+  return pickRandom(filtered.length > 0 ? filtered : items)
+}
+
 export function pickRandomGoodItem(): GameItem {
   return pickRandom(GOOD_ITEMS)
 }
@@ -26,19 +35,24 @@ function getTopBreadItem(): GameItem {
 
 /**
  * Pick the next falling item based on current stack size.
- * Top bread only rolls when stack has at least MIN_STACK_FOR_TOP_BREAD good layers.
+ * Top bread only rolls when stack has at least MIN_STACK_FOR_TOP_BREAD layers.
+ * Skips immediate repeats when another item is available in the pool.
  */
-export function pickRandomSpawnItem(stackLayerCount: number): GameItem {
+export function pickRandomSpawnItem(
+  stackLayerCount: number,
+  lastItemId: string | null = null,
+): GameItem {
   if (
     stackLayerCount >= MIN_STACK_FOR_TOP_BREAD &&
+    lastItemId !== TOP_BREAD_ID &&
     Math.random() < TOP_BREAD_SPAWN_CHANCE
   ) {
     return getTopBreadItem()
   }
 
   if (Math.random() < YUCK_SPAWN_CHANCE) {
-    return pickRandom(YUCK_ITEMS)
+    return pickRandomExcluding(YUCK_ITEMS, lastItemId)
   }
 
-  return pickRandom(GOOD_ITEMS)
+  return pickRandomExcluding(GOOD_ITEMS, lastItemId)
 }
