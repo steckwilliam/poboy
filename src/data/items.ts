@@ -34,7 +34,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/roast-beef.png',
     fallingImagePath: '/assets/sprites/ingredients/roast-beef-falling.png',
     stackImagePath: '/assets/sprites/ingredients/roast-beef-stack.png',
-    fallingRender: { width: 250 },
+    fallingRender: { width: 200 },
     stackRender: { width: 270, offsetX: 0, offsetY: 45, overlap: 60 },
   },
   {
@@ -60,7 +60,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/tomato-slice.png',
     fallingImagePath: '/assets/sprites/ingredients/tomato-falling.png',
     stackImagePath: '/assets/sprites/ingredients/tomato-stack.png',
-    fallingRender: { width: 165 },
+    fallingRender: { width: 145 },
     stackRender: { width: 270, offsetX: 0, offsetY: 40, overlap: 52 },
   },
   {
@@ -73,7 +73,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/pickle-slice.png',
     fallingImagePath: '/assets/sprites/ingredients/pickle-falling.png',
     stackImagePath: '/assets/sprites/ingredients/pickle-stack.png',
-    fallingRender: { width: 155 },
+    fallingRender: { width: 120 },
     stackRender: { width: 270, offsetX: 0, offsetY: 42, overlap: 55 },
   },
   {
@@ -86,7 +86,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/lettuce.png',
     fallingImagePath: '/assets/sprites/ingredients/lettuce-falling.png',
     stackImagePath: '/assets/sprites/ingredients/lettuce-stack.png',
-    fallingRender: { width: 160 },
+    fallingRender: { width: 140 },
     stackRender: { width: 270, offsetX: 0, offsetY: 42, overlap: 52 },
   },
   {
@@ -99,7 +99,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/mayonnaise.png',
     fallingImagePath: '/assets/sprites/ingredients/mayonnaise-falling.png',
     stackImagePath: '/assets/sprites/ingredients/mayonnaise-stack.png',
-    fallingRender: { width: 150 },
+    fallingRender: { width: 100 },
     stackRender: { width: 265, offsetX: 0, offsetY: 45, overlap: 60 },
   },
   {
@@ -112,7 +112,7 @@ export const ITEMS: GameItem[] = [
     futureImagePath: '/images/hot-sauce.png',
     fallingImagePath: '/assets/sprites/ingredients/hot-sauce-falling.png',
     stackImagePath: '/assets/sprites/ingredients/hot-sauce-stack.png',
-    fallingRender: { width: 100 },
+    fallingRender: { width: 80 },
     stackRender: { width: 260, offsetX: 0, offsetY: 45, overlap: 60 },
   },
 

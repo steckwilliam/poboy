@@ -95,8 +95,8 @@ export function InstructionsScreen({ onBack, onPlay }: InstructionsScreenProps) 
               Yuck Items
             </h3>
             <p className="instructions-screen__text">
-              Avoid the yucky items or you will increase the yuck meter. If you
-              catch three bad items, the game is over.
+              Avoid the yuck items or you will increase the yuck meter. If you
+              catch three yuck items, the game is over.
             </p>
             <InstructionSpriteRow
               sprites={YUCK_ITEM_SPRITES}
