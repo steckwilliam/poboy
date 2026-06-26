@@ -11,7 +11,7 @@ export interface GoodIngredientTier {
 
 export const GOOD_INGREDIENT_TIERS: GoodIngredientTier[] = [
   {
-    label: 'Meats: Shrimp, Sausage, Roast Beef',
+    label: 'Meats: Fried Shrimp, Sausage, Roast Beef',
     itemIds: ['fried-shrimp', 'sausage-link', 'roast-beef'],
   },
   {
