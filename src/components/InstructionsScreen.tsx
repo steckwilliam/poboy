@@ -81,7 +81,8 @@ export function InstructionsScreen({ onBack, onPlay }: InstructionsScreenProps) 
           <section className="instructions-screen__section instructions-screen__section--good">
             <h3 className="instructions-screen__label">Good Ingredients</h3>
             <p className="instructions-screen__text">
-              Catch tasty ingredients to build your po&apos; boy.
+              Use the arrow keys or WASD to move the bread and catch tasty
+              ingredients to build your po&apos; boy.
             </p>
             <div className="instructions-screen__tiers">
               {GOOD_INGREDIENT_TIERS.map((tier) => (
