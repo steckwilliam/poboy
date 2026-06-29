@@ -1,5 +1,7 @@
 # Po' Boy Pile-Up
 
+Play at [poboy.netlify.app](https://poboy.netlify.app/).
+
 ## Start
 
 ![Start page](public/screenshots/home.png)
