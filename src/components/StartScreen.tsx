@@ -10,7 +10,7 @@ export function StartScreen({ onPlay, onHowToPlay }: StartScreenProps) {
     <GameFrame className="game-frame--start">
       <h1 className="flash-title start-screen__title">
         <span className="flash-title__line">Po&apos; Boy</span>
-        <span className="flash-title__line flash-title__line--accent">Pile-Up</span>
+        <span className="flash-title__line flash-title__line--accent">Pile Up</span>
       </h1>
 
       <p className="flash-text start-screen__tagline">

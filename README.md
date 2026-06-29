@@ -1,4 +1,4 @@
-# Po' Boy Pile-Up
+# Po' Boy Pile Up
 
 Play at [poboy.netlify.app](https://poboy.netlify.app/).
 
